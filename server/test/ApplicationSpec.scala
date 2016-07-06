@@ -13,6 +13,8 @@ class ApplicationSpec() extends PlaySpecification {
   "Application" should {
 
     "send 404 on a bad request" in new WithDepsApplication {
+      val c=app.configuration.getString("testconfig")
+      println(s"config: $c")
       route(app, FakeRequest(GET, "/boum")) must beSome.which (status(_) == NOT_FOUND)
     }
 

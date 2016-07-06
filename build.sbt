@@ -19,6 +19,7 @@ lazy val server = (project in file("server")).settings(
 ).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
   dependsOn(sharedJvm)
+  .settings(testConfigSetting)
 
 lazy val client = (project in file("client")).settings(
   scalaVersion := scalaV,
@@ -44,3 +45,11 @@ onLoad in Global := (Command.process("project server", _: State)) compose (onLoa
 EclipseKeys.skipParents in ThisBuild := false
 // Compile the project before generating Eclipse files, so that generated .scala or .class files for views and routes are present
 EclipseKeys.preTasks := Seq(compile in (server, Compile))
+
+
+lazy val testConfigSetting = Seq(
+  javaOptions in Test ++= {
+    val confFile = sys.env.getOrElse("PLAY_CONF_FILE", "application.local.conf")
+    Seq(s"-Dconfig.resource=$confFile")
+  }
+)
